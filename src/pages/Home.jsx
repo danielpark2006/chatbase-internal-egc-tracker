@@ -163,8 +163,8 @@ export default function App() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff", margin: 0 }}>LinkedIn EGC Tracker</h1>
-            <p style={{ color: "#888", margin: "4px 0 0", fontSize: 14 }}>Chatbase GTM // Quota: {QUOTA} posts/week per person</p>
+            <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/699dc22777ae3667ad134a90/1214b4d5a_Wordmark-Dark.png" alt="Chatbase" style={{ height: 32, marginBottom: 6, filter: "invert(1)" }} />
+            <p style={{ color: "#888", margin: "4px 0 0", fontSize: 14 }}>LinkedIn EGC Tracker // Quota: {QUOTA} posts/week per person</p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <button
