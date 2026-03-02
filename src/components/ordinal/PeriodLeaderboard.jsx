@@ -1,34 +1,8 @@
-function getDateRange(period) {
-  const now = new Date();
-  if (period === "week") {
-    const day = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((day + 6) % 7));
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { start: monday, end: sunday };
-  }
-  if (period === "month") {
-    return {
-      start: new Date(now.getFullYear(), now.getMonth(), 1),
-      end: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
-    };
-  }
-  return {
-    start: new Date(now.getFullYear(), 0, 1),
-    end: new Date(now.getFullYear(), 11, 31, 23, 59, 59)
-  };
-}
+import { getDateRange, filterPostsByRange } from "./dateRanges";
 
 export default function PeriodLeaderboard({ profiles, posts, period }) {
   const { start, end } = getDateRange(period);
-
-  const periodPosts = posts.filter(p => {
-    const d = new Date(p.post_date + "T00:00:00");
-    return d >= start && d <= end;
-  });
+  const periodPosts = filterPostsByRange(posts, start, end);
 
   const stats = profiles.map(profile => {
     const myPosts = periodPosts.filter(p => p.profile_id === profile.ordinal_id);

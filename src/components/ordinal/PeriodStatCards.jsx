@@ -1,64 +1,11 @@
-function getDateRange(period) {
-  const now = new Date();
-  if (period === "week") {
-    const day = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((day + 6) % 7));
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { start: monday, end: sunday };
-  }
-  if (period === "month") {
-    return {
-      start: new Date(now.getFullYear(), now.getMonth(), 1),
-      end: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
-    };
-  }
-  return {
-    start: new Date(now.getFullYear(), 0, 1),
-    end: new Date(now.getFullYear(), 11, 31, 23, 59, 59)
-  };
-}
-
-function getPrevDateRange(period) {
-  const now = new Date();
-  if (period === "week") {
-    const day = now.getDay();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((day + 6) % 7) - 7);
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { start: monday, end: sunday };
-  }
-  if (period === "month") {
-    return {
-      start: new Date(now.getFullYear(), now.getMonth() - 1, 1),
-      end: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
-    };
-  }
-  return {
-    start: new Date(now.getFullYear() - 1, 0, 1),
-    end: new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59)
-  };
-}
-
-function filterPosts(posts, start, end) {
-  return posts.filter(p => {
-    const d = new Date(p.post_date + "T00:00:00");
-    return d >= start && d <= end;
-  });
-}
+import { getDateRange, getPrevDateRange, filterPostsByRange } from "./dateRanges";
 
 export default function PeriodStatCards({ profiles, posts, period }) {
   const { start, end } = getDateRange(period);
   const { start: ps, end: pe } = getPrevDateRange(period);
 
-  const curr = filterPosts(posts, start, end);
-  const prev = filterPosts(posts, ps, pe);
+  const curr = filterPostsByRange(posts, start, end);
+  const prev = filterPostsByRange(posts, ps, pe);
 
   const totalImpressions = curr.reduce((s, p) => s + (p.impressions || 0), 0);
   const prevImpressions = prev.reduce((s, p) => s + (p.impressions || 0), 0);
@@ -66,14 +13,12 @@ export default function PeriodStatCards({ profiles, posts, period }) {
   const prevPosts = prev.length;
   const totalLikes = curr.reduce((s, p) => s + (p.likes || 0), 0);
   const totalComments = curr.reduce((s, p) => s + (p.comments || 0), 0);
-
   const totalEngagement = curr.reduce((s, p) => s + (p.likes || 0) + (p.comments || 0) + (p.shares || 0) + (p.clicks || 0), 0);
   const avgEngRate = totalImpressions > 0 ? ((totalEngagement / totalImpressions) * 100).toFixed(2) : "0.00";
 
   const impressionChange = prevImpressions > 0 ? (((totalImpressions - prevImpressions) / prevImpressions) * 100).toFixed(0) : null;
   const postsChange = prevPosts > 0 ? (((totalPosts - prevPosts) / prevPosts) * 100).toFixed(0) : null;
-
-  const label = period === "week" ? "vs last week" : period === "month" ? "vs last month" : "vs last year";
+  const label = period === "week" ? "vs prev 7 days" : period === "month" ? "vs prev 30 days" : "vs prev 365 days";
 
   const cards = [
     { label: "Impressions", value: totalImpressions.toLocaleString(), color: "#60a5fa", change: impressionChange, label2: label },
