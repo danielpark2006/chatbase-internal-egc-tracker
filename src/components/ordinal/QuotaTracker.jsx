@@ -1,11 +1,13 @@
-import { formatDateRange } from "./dateRanges.js";
-
 const WEEKLY_QUOTA = 3;
 
-// Get current Mon-Sun week containing today
+function formatDateRange(start, end) {
+  const opts = { month: "short", day: "numeric" };
+  return `${start.toLocaleDateString("en-US", opts)} – ${end.toLocaleDateString("en-US", opts)}`;
+}
+
 function getCurrentWeekRange() {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun, 1=Mon...
+  const day = now.getDay();
   const monday = new Date(now);
   monday.setDate(now.getDate() - ((day + 6) % 7));
   monday.setHours(0, 0, 0, 0);
@@ -15,48 +17,36 @@ function getCurrentWeekRange() {
   return { start: monday, end: sunday };
 }
 
-// Build list of week ranges covering the last N days, most recent first
 function getWeekRanges(period) {
   const weeks = [];
   const { start: thisStart, end: thisEnd } = getCurrentWeekRange();
-
-  if (period === "week") {
-    weeks.push({ start: thisStart, end: thisEnd });
-  } else if (period === "month") {
-    // Last 4 weeks
-    for (let i = 0; i < 4; i++) {
-      const s = new Date(thisStart);
-      s.setDate(thisStart.getDate() - i * 7);
-      const e = new Date(thisEnd);
-      e.setDate(thisEnd.getDate() - i * 7);
-      weeks.push({ start: s, end: e });
-    }
-  } else {
-    // Last 12 weeks for year view
-    for (let i = 0; i < 12; i++) {
-      const s = new Date(thisStart);
-      s.setDate(thisStart.getDate() - i * 7);
-      const e = new Date(thisEnd);
-      e.setDate(thisEnd.getDate() - i * 7);
-      weeks.push({ start: s, end: e });
-    }
+  const count = period === "week" ? 1 : period === "month" ? 4 : 12;
+  for (let i = 0; i < count; i++) {
+    const s = new Date(thisStart);
+    s.setDate(thisStart.getDate() - i * 7);
+    const e = new Date(thisEnd);
+    e.setDate(thisEnd.getDate() - i * 7);
+    weeks.push({ start: s, end: e });
   }
   return weeks;
+}
+
+function countPosts(posts, profileOrdinalId, start, end) {
+  return posts.filter(p => {
+    if (p.profile_id !== profileOrdinalId) return false;
+    const d = new Date(p.post_date + "T00:00:00");
+    return d >= start && d <= end;
+  }).length;
 }
 
 export default function QuotaTracker({ profiles, posts, period }) {
   const weeks = getWeekRanges(period);
   const people = profiles.filter(p => p.role !== "Company Page");
 
-  // For single week view: show progress bars per person
   if (period === "week") {
     const { start, end } = weeks[0];
     const rows = people.map(profile => {
-      const count = posts.filter(p => {
-        if (p.profile_id !== profile.ordinal_id) return false;
-        const d = new Date(p.post_date + "T00:00:00");
-        return d >= start && d <= end;
-      }).length;
+      const count = countPosts(posts, profile.ordinal_id, start, end);
       const pct = Math.min((count / WEEKLY_QUOTA) * 100, 100);
       const met = count >= WEEKLY_QUOTA;
       const close = !met && count >= WEEKLY_QUOTA - 1;
@@ -101,7 +91,6 @@ export default function QuotaTracker({ profiles, posts, period }) {
     );
   }
 
-  // For month/year view: show a table of weekly quota by person
   return (
     <div style={{ background: "#141414", border: "1px solid #262626", borderRadius: 12, padding: 20, marginBottom: 24, overflowX: "auto" }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", marginBottom: 16 }}>
@@ -124,11 +113,7 @@ export default function QuotaTracker({ profiles, posts, period }) {
             <tr key={profile.id} style={{ borderTop: "1px solid #1f1f1f" }}>
               <td style={{ padding: "8px 10px", color: "#ccc", fontWeight: 500 }}>{profile.name}</td>
               {weeks.map((w, i) => {
-                const count = posts.filter(p => {
-                  if (p.profile_id !== profile.ordinal_id) return false;
-                  const d = new Date(p.post_date + "T00:00:00");
-                  return d >= w.start && d <= w.end;
-                }).length;
+                const count = countPosts(posts, profile.ordinal_id, w.start, w.end);
                 const met = count >= WEEKLY_QUOTA;
                 const close = !met && count >= WEEKLY_QUOTA - 1;
                 return (

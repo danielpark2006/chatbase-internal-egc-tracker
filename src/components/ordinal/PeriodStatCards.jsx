@@ -1,11 +1,29 @@
-import { getDateRange, getPrevDateRange, filterPostsByRange } from "./dateRanges.js";
+function getRange(period, offset = 0) {
+  const now = new Date();
+  const days = period === "week" ? 7 : period === "month" ? 30 : 365;
+  const end = new Date(now);
+  end.setDate(now.getDate() - days * offset);
+  end.setHours(23, 59, 59, 999);
+  const start = new Date(end);
+  start.setDate(end.getDate() - (days - 1));
+  start.setHours(0, 0, 0, 0);
+  return { start, end };
+}
+
+function filterPosts(posts, start, end) {
+  return posts.filter(p => {
+    if (!p.post_date) return false;
+    const d = new Date(p.post_date + "T00:00:00");
+    return d >= start && d <= end;
+  });
+}
 
 export default function PeriodStatCards({ profiles, posts, period }) {
-  const { start, end } = getDateRange(period);
-  const { start: ps, end: pe } = getPrevDateRange(period);
+  const { start, end } = getRange(period, 0);
+  const { start: ps, end: pe } = getRange(period, 1);
 
-  const curr = filterPostsByRange(posts, start, end);
-  const prev = filterPostsByRange(posts, ps, pe);
+  const curr = filterPosts(posts, start, end);
+  const prev = filterPosts(posts, ps, pe);
 
   const totalImpressions = curr.reduce((s, p) => s + (p.impressions || 0), 0);
   const prevImpressions = prev.reduce((s, p) => s + (p.impressions || 0), 0);

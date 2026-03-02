@@ -1,4 +1,29 @@
-import { getDateRange, formatDateRange } from "./dateRanges.js";
+function getDateRange(period) {
+  const now = new Date();
+  const todayEnd = new Date(now);
+  todayEnd.setHours(23, 59, 59, 999);
+  if (period === "week") {
+    const start = new Date(now);
+    start.setDate(now.getDate() - 6);
+    start.setHours(0, 0, 0, 0);
+    return { start, end: todayEnd };
+  }
+  if (period === "month") {
+    const start = new Date(now);
+    start.setDate(now.getDate() - 29);
+    start.setHours(0, 0, 0, 0);
+    return { start, end: todayEnd };
+  }
+  const start = new Date(now);
+  start.setDate(now.getDate() - 364);
+  start.setHours(0, 0, 0, 0);
+  return { start, end: todayEnd };
+}
+
+function formatDateRange(start, end) {
+  const opts = { month: "short", day: "numeric" };
+  return `${start.toLocaleDateString("en-US", opts)} – ${end.toLocaleDateString("en-US", opts)}`;
+}
 
 export default function PeriodSelector({ period, onChange }) {
   const options = [

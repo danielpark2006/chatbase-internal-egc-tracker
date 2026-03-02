@@ -1,8 +1,22 @@
-import { getDateRange, filterPostsByRange } from "./dateRanges.js";
+function getDateRange(period) {
+  const now = new Date();
+  const todayEnd = new Date(now);
+  todayEnd.setHours(23, 59, 59, 999);
+  const days = period === "week" ? 6 : period === "month" ? 29 : 364;
+  const start = new Date(now);
+  start.setDate(now.getDate() - days);
+  start.setHours(0, 0, 0, 0);
+  return { start, end: todayEnd };
+}
 
 export default function PeriodLeaderboard({ profiles, posts, period }) {
   const { start, end } = getDateRange(period);
-  const periodPosts = filterPostsByRange(posts, start, end);
+
+  const periodPosts = posts.filter(p => {
+    if (!p.post_date) return false;
+    const d = new Date(p.post_date + "T00:00:00");
+    return d >= start && d <= end;
+  });
 
   const stats = profiles.map(profile => {
     const myPosts = periodPosts.filter(p => p.profile_id === profile.ordinal_id);
@@ -16,9 +30,6 @@ export default function PeriodLeaderboard({ profiles, posts, period }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {stats.length === 0 && (
-        <div style={{ color: "#888", textAlign: "center", padding: 40 }}>No data for this period.</div>
-      )}
       {stats.map((p, i) => (
         <div key={p.id} style={{ background: "#141414", border: "1px solid #262626", borderRadius: 12, padding: "14px 20px", display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#cd7c2f" : "#555", width: 28, textAlign: "center" }}>
