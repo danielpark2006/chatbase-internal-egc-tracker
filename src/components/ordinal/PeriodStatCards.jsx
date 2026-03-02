@@ -1,4 +1,4 @@
-import { getDateRange, getPrevDateRange, filterPostsByRange } from "./dateRanges";
+import { getDateRange, getPrevDateRange, filterPostsByRange } from "./dateRanges.js";
 
 export default function PeriodStatCards({ profiles, posts, period }) {
   const { start, end } = getDateRange(period);

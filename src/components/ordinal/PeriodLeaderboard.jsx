@@ -1,4 +1,4 @@
-import { getDateRange, filterPostsByRange } from "./dateRanges";
+import { getDateRange, filterPostsByRange } from "./dateRanges.js";
 
 export default function PeriodLeaderboard({ profiles, posts, period }) {
   const { start, end } = getDateRange(period);

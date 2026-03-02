@@ -1,4 +1,4 @@
-import { formatDateRange } from "./dateRanges";
+import { formatDateRange } from "./dateRanges.js";
 
 const WEEKLY_QUOTA = 3;
 

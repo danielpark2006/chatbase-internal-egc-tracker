@@ -1,4 +1,4 @@
-import { getDateRange, formatDateRange } from "./dateRanges";
+import { getDateRange, formatDateRange } from "./dateRanges.js";
 
 export default function PeriodSelector({ period, onChange }) {
   const options = [
