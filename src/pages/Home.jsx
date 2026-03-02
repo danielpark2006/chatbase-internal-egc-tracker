@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import SyncControls from "../components/ordinal/SyncControls";
-import OrdinalStatCards from "../components/ordinal/OrdinalStatCards";
-import OrdinalLeaderboard from "../components/ordinal/OrdinalLeaderboard";
+import PeriodSelector from "../components/ordinal/PeriodSelector";
+import PeriodStatCards from "../components/ordinal/PeriodStatCards";
+import PeriodLeaderboard from "../components/ordinal/PeriodLeaderboard";
+import QuotaTracker from "../components/ordinal/QuotaTracker";
 import EmployeeCards from "../components/ordinal/EmployeeCards";
 import PostAnalyticsTable from "../components/ordinal/PostAnalyticsTable";
 import OrdinalGrowthChart from "../components/ordinal/OrdinalGrowthChart";
@@ -11,6 +13,7 @@ export default function App() {
   const [profiles, setProfiles] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState("week");
   const [view, setView] = useState("leaderboard");
 
   const loadData = async () => {
@@ -53,8 +56,14 @@ export default function App() {
           <div style={{ color: "#888", textAlign: "center", padding: 60, fontSize: 16 }}>Loading...</div>
         ) : (
           <>
-            {/* Stat Cards */}
-            <OrdinalStatCards profiles={profiles} posts={posts} />
+            {/* Period Selector */}
+            <PeriodSelector period={period} onChange={setPeriod} />
+
+            {/* Period Stat Cards */}
+            <PeriodStatCards profiles={profiles} posts={posts} period={period} />
+
+            {/* Quota Tracker */}
+            <QuotaTracker profiles={profiles} posts={posts} period={period} />
 
             {/* Tabs */}
             <div style={{ display: "flex", gap: 4, marginBottom: 24, background: "#141414", borderRadius: 8, padding: 4 }}>
@@ -69,7 +78,7 @@ export default function App() {
             </div>
 
             {/* Views */}
-            {view === "leaderboard" && <OrdinalLeaderboard profiles={profiles} />}
+            {view === "leaderboard" && <PeriodLeaderboard profiles={profiles} posts={posts} period={period} />}
             {view === "cards" && <EmployeeCards profiles={profiles} />}
             {view === "posts" && (
               <div style={{ background: "#141414", border: "1px solid #262626", borderRadius: 12, padding: 20 }}>
