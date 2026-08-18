@@ -1,0 +1,54 @@
+{
+  "name": "PostAnalytic",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string"
+    },
+    "employee_name": {
+      "type": "string"
+    },
+    "post_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "post_text_preview": {
+      "type": "string"
+    },
+    "impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "likes": {
+      "type": "number",
+      "default": 0
+    },
+    "comments": {
+      "type": "number",
+      "default": 0
+    },
+    "shares": {
+      "type": "number",
+      "default": 0
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "engagement_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "post_url": {
+      "type": "string"
+    },
+    "platform_post_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "profile_id",
+    "employee_name",
+    "post_date"
+  ]
+}

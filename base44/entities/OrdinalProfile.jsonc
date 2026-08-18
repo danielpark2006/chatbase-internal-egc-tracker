@@ -1,0 +1,46 @@
+{
+  "name": "OrdinalProfile",
+  "type": "object",
+  "properties": {
+    "ordinal_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "LinkedIn",
+        "Twitter"
+      ],
+      "default": "LinkedIn"
+    },
+    "follower_count": {
+      "type": "number",
+      "default": 0
+    },
+    "total_impressions": {
+      "type": "number",
+      "default": 0
+    },
+    "total_posts": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_engagement_rate": {
+      "type": "number",
+      "default": 0
+    },
+    "last_synced": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ordinal_id",
+    "name"
+  ]
+}
